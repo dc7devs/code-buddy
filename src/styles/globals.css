@@ -9,9 +9,9 @@
         @apply text-white
     }
 
-    ::-webkit-scrollbar {
-        width: 0;
-    }
+    /* ::-webkit-scrollbar {
+        width: 20px;
+    } */
 
     body {
         @apply 
