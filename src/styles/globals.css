@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+    * {
+        scrollbar-color: #111 #050505;
+        @apply text-white
+    }
+
+    body {
+        @apply 
+        bg-black 
+        bg-paper-pattern
+        bg-paper-pattern-size 
+        bg-paper-pattern-position
+        h-screen w-full
+    }
+}
