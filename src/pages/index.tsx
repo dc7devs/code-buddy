@@ -1,25 +1,28 @@
-import Head from 'next/head'
-import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import Layout from './components/layout'
 import BoxCode from './components/box-code'
-import { useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+
+import { Configuration, CreateCompletionResponse, OpenAIApi } from 'openai'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
-  const [inputCode, setInputCode] = useState(''); // @Type code in language <nome da linguagem>
+  const [inputCode, setInputCode] = useState('');
   const [explanation, setExplanation] = useState('');
 
-  const heandlerCodeReading = () => {
-    setExplanation("Deu certo... possivel explicação");
-  }
+  const heandlerCodeReading = async () => {
+    const explan = await getCompletion(inputCode);
+    setExplanation(explan);
 
+    console.log(explanation);
+  }
+  
   const handleTextAreaChange = ({ target }: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = target;
     setInputCode(value);
   }
-
+  
   return (
     <Layout>
       <h1 className={`${inter.className} text-5xl font-bold text-center sm:mt-20 sm:mb-0 mt-10 mx-5`}>E aí! Me explica esse código?</h1>
@@ -43,8 +46,27 @@ export default function Home() {
         </BoxCode>
         <BoxCode
           className={"bg-white/80 backdrop-blur-sm text-black overflow-auto py-2"}
-        >{explanation}</BoxCode>
+        >{JSON.stringify(explanation, null, 2)}</BoxCode>
       </div>
     </Layout>
   )
+}
+
+async function getCompletion(completion: string) {
+  const openai = new OpenAIApi(new Configuration({
+    apiKey: process.env.OPENAI_API_KEY
+  }))
+
+  const response = await openai.createCompletion({
+    model: "code-davinci-002",
+    prompt: `codigo:\n${completion}\nAqui esta o que o codigo faz:\n1`,
+    temperature: 0,
+    max_tokens: 64,
+    top_p: 1.0,
+    frequency_penalty: 0.0,
+    presence_penalty: 0.0,
+    stop: ["\"\"\""],
+  })
+
+  return JSON.stringify(response.data, null, 2);
 }
